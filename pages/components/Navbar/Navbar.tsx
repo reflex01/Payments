@@ -4,7 +4,7 @@ import React from 'react';
 import { Bars3Icon } from '@heroicons/react/24/outline';
 import Drawer from "./Drawer";
 import Drawerdata from "./Drawerdata";
-import {getKeycloak} from '../../keycloak';
+import {login, logout} from '../../keycloak';
 
 
 // import Contactusform from './Contactus';
@@ -14,7 +14,6 @@ interface NavigationItem {
     href: string;
     current: boolean;
 }
-const { keycloak } = getKeycloak();
 const navigation: NavigationItem[] = [
     { name: 'Home', href: '#home-section', current: false },
     { name: 'Pricing', href: '#exchange-section', current: false },
@@ -74,7 +73,7 @@ const Navbar = () => {
                             <div className="flex space-x-2">
                                 <button className='hidden lg:flex justify-end text-xl font-semibold py-4 px-6 lg:px-6 navbutton text-white'>Create your account</button>
                                 <div 
-    onClick={() => keycloak.login()} 
+    onClick={() => login()} 
     className='hidden lg:flex justify-end text-xl font-semibold py-4 px-4 lg:px-12 navbutton text-white'
   >
     Login

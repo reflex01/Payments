@@ -1,25 +1,43 @@
 import Keycloak from 'keycloak-js';
 
-let keycloak;
-let authenticated = false;
+let keycloakInstance = null;
+let isAuthenticated = false;
 
-if (typeof window !== 'undefined') {
-  // Keycloak initialization
-  keycloak = new Keycloak({
+const initKeycloak = (onAuthenticatedCallback) => {
+  keycloakInstance = new Keycloak({
     url: 'http://localhost:8080',
-    realm: 'saas-realm',
-    clientId: 'front-client',
-    secret: '2dLJS5AcDZfsevo1HsA4emyy7yTrY4UH',
+    realm: 'front',
+    clientId: 'frontend',
   });
 
-  keycloak.init({ onLoad: 'check-sso' }).then((auth) => {
-    authenticated = auth;
-    if (authenticated) {
-      console.log("Authenticated");
-    }
-  });
-}
+  keycloakInstance.init({ onLoad: 'check-sso' })
+    .then(auth => {
+      isAuthenticated = auth;
+      if (auth) {
+        console.log("Authenticated");
+      }
+      if (typeof onAuthenticatedCallback === 'function') {
+        onAuthenticatedCallback(auth);
+      }
+    })
+    .catch(err => {
+      console.error("Keycloak initialization error:", err);
+    });
+};
 
-export function getKeycloak() {
-  return { keycloak, authenticated };
-}
+// keycloak.js
+const login = () => {
+  keycloakInstance.login({ redirectUri: `${window.location.origin}/Bar` });
+};
+
+
+const logout = () => {
+  if (keycloakInstance) {
+    keycloakInstance.logout();
+  }
+};
+
+const getKeycloakInstance = () => keycloakInstance;
+const getIsAuthenticated = () => isAuthenticated;
+
+export { initKeycloak, login, logout, getKeycloakInstance, getIsAuthenticated };
